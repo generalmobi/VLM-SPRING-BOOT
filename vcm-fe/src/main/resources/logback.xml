@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- configuration file for LogBack (slf4J implementation) See here for more 
+	details: http://gordondickens.com/wordpress/2013/03/27/sawing-through-the-java-loggers/ -->
+<configuration scan="true" scanPeriod="30 seconds">
+
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<property resource="profiles/vlm_${vlm.env}.properties" />
+ 
+
+
+	<!-- To enable JMX Management -->
+	<jmxConfigurator />
+	<variable scope="context" name="mdcPattern" value="%X{uid}%X{uuid}" />
+	<variable scope="context" name="logPattern"
+		value="%-5p [%d] ${mdcPattern} %c{20}: %m%n" />
+
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>${logPattern}</Pattern>
+		</encoder>
+	</appender>
+
+	<!--Daily rolling file appender -->
+	<appender name="file"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.home}/VLM/vlm-fe/fe.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.home}/VLM/vlm-fe/fe-%d{yyyy-MM-dd}.gz
+			</FileNamePattern>
+			<maxHistory>190</maxHistory>
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${logPattern}</Pattern>
+		</layout>
+	</appender>
+ 
+	<root level="info">
+		<appender-ref ref="${root.appender}" />
+	</root>
+</configuration>
